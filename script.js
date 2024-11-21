@@ -68,10 +68,20 @@ document.getElementById("processFile").addEventListener("click", async () => {
     }
 });
 
+const mockedResponse = {
+    choices: [
+        {
+            text: "Formatted question example here."
+        }
+    ]
+};
+
+
 // Function to call the API and format a question
 async function formatQuestion(question, apiKey) {
     const formattedInstructions = `Your sole responsibility is to convert questions into a standardized format. ... [trimmed for brevity] ... {question}`;
     try {
+        console.log("Sending request with question:", question);
         const response = await fetch("https://api.anthropic.com/v1/completions", {
             method: "POST",
             headers: {
@@ -85,9 +95,20 @@ async function formatQuestion(question, apiKey) {
                 temperature: 0
             })
         });
-        if (!response.ok) throw new Error(`Error: ${response.status}`);
+        console.log("API Response Status:", response.status);
+
+        if (!response.ok) {
+            const errorDetails = await response.text();
+            console.error("Error details:", errorDetails);
+            throw new Error(`Error: ${response.status}`);
+        }
+
         const data = await response.json();
-        return data.choices[0].text.trim();
+        console.log("API Response Data:", data);
+
+        return data.choices && data.choices[0] && data.choices[0].text
+            ? data.choices[0].text.trim()
+            : null;
     } catch (error) {
         console.error("Error formatting question:", error);
         return null;
