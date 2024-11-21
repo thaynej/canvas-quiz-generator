@@ -76,41 +76,21 @@ const mockedResponse = {
     ]
 };
 
-
-// Function to call the API and format a question
 async function formatQuestion(question, apiKey) {
-    const formattedInstructions = `Your sole responsibility is to convert questions into a standardized format. ... [trimmed for brevity] ... {question}`;
-    try {
-        console.log("Sending request with question:", question);
-        const response = await fetch("https://api.anthropic.com/v1/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${apiKey}`
-            },
-            body: JSON.stringify({
-                model: "claude-3",
-                prompt: formattedInstructions.replace("{question}", question),
-                max_tokens: 1000,
-                temperature: 0
-            })
-        });
-        console.log("API Response Status:", response.status);
+    console.log("Mocking response for testing...");
+    
+    // Mocked response data
+    const mockedResponse = {
+        choices: [
+            {
+                text: `Title: Mocked Title\nQuestion Type: Multiple Choice\n\nQuestion Stem: ${question}\n\nAnswer: Option 1\nCorrect: No\nFeedback: Feedback for option 1\n\nAnswer: Option 2\nCorrect: Yes\nFeedback: Feedback for option 2\n\nGeneral Feedback: General feedback for the question\nCorrect Feedback: Well done!\nIncorrect Feedback: Please review the material.`
+            }
+        ]
+    };
 
-        if (!response.ok) {
-            const errorDetails = await response.text();
-            console.error("Error details:", errorDetails);
-            throw new Error(`Error: ${response.status}`);
-        }
+    // Simulate a delay to mimic real API behavior
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
-        const data = await response.json();
-        console.log("API Response Data:", data);
-
-        return data.choices && data.choices[0] && data.choices[0].text
-            ? data.choices[0].text.trim()
-            : null;
-    } catch (error) {
-        console.error("Error formatting question:", error);
-        return null;
-    }
+    return mockedResponse.choices[0].text.trim();
 }
+
